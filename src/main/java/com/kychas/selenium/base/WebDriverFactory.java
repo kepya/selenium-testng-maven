@@ -15,6 +15,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 import org.openqa.selenium.safari.SafariOptions;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class WebDriverFactory extends Utility {
 
     /**
@@ -48,13 +51,14 @@ public class WebDriverFactory extends Utility {
      *
      * @param isLocal - is tests will be started local or not
      */
-    public static void initializedBrowser(boolean isLocal) {
+    public static void initializedBrowser(boolean isLocal) throws MalformedURLException {
         if (driver == null) {
             TestsBrowser testsBrowser = new TestsBrowser(prop.getProperty("Browser"));
             Browser browser = testsBrowser.getBrowser();
 
             if (!isLocal) {
-                driver = new RemoteWebDriver(CapabilitiesGenerator.getDefaultCapabilities(browser));
+                FirefoxOptions options = new FirefoxOptions();
+                driver = new RemoteWebDriver(new URL(remote_url_firefox), options);
             } else {
                 switch (browser) {
                     case FIREFOX:

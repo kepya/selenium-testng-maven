@@ -19,6 +19,11 @@ public class SampleTest extends BaseTest {
 	}
 
 	@Test
+	public void openSite() {
+		WebDriverFactory.getDriver().get("https://mcm-test.londo-tech.com/");
+	}
+
+	@Test
 	public void adminLoginSuccessfully() {
 		try {
 			//open browser to link https://mcm-test.londo-tech.com/

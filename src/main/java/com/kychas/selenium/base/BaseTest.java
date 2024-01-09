@@ -3,6 +3,8 @@ package com.kychas.selenium.base;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
+import java.net.MalformedURLException;
+
 public class BaseTest {
 
     public BaseTest() {
@@ -11,7 +13,11 @@ public class BaseTest {
 
     @BeforeTest
     public void beforeTest() {
-        WebDriverFactory.initializedBrowser(true);
+        try {
+            WebDriverFactory.initializedBrowser(false);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
 
     @AfterTest

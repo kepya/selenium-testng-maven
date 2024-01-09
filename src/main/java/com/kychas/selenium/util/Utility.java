@@ -15,6 +15,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class Utility {
+	protected static String remote_url_firefox = "http://localhost:4446/wd/hub";
 
 	protected static Properties prop;
 	protected static WebDriver driver;
