@@ -1,0 +1,82 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation. gg
+# https://github.com/marketplace/actions/jenkins-action
+
+name: Publish Docker image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push_to_registry:
+    name: Push Docker image to Docker Hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: kychas/nestjs-linode-server
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  push_to_pre_prod_server:
+    name: Push to pre prod server
+    needs: "push_to_registry"
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME_PRE_PROD_SERVER }}
+        password: ${{ secrets.PASSWORD_PRE_PROD_SERVER }}
+        port: ${{ secrets.PORT }}
+        script: bash update.sh
+
+  run_jenkins_test:
+    name: Run jenkins test when deployment pass effectively
+    needs: "push_to_pre_prod_server"
+    runs-on: ubuntu-latest
+      steps:
+          - name: Trigger jenkins job
+            uses: joshlk/jenkins-githubaction@master
+            with:
+              url: https://jenkins_url
+              job_name: jenkins_job_name
+              username: ${{ secrets.JENKINS_USER }}
+              api_token: ${{ secrets.JENKINS_TOKEN }}
+              timeout: "1000"
+
+  push_to_prod_server:
+    name: Push to prod server
+    needs: "run_jenkins_test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME_PROD_SERVER }}
+          password: ${{ secrets.PASSWORD_PROD_SERVER }}
+          port: ${{ secrets.PORT }}
+          script: bash update.sh

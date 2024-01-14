@@ -24,8 +24,8 @@ pipeline {
                 sh 'mvn clean install test'
                  }
         }
-        stage('Publish Reports') {
-             steps {
+           stage('Publish Reports') {
+                 steps {
                 sh 'echo Generating TestNG Report'
                  }
             post {
@@ -33,6 +33,80 @@ pipeline {
                     step([$class: 'Publisher', reportFilenamePattern: '**/testng-results.xml'])
                 }
             }
+        }
+
+        stage('DeployToStaging') {
+                when {
+                    branch 'master'
+                }
+                steps {
+                    withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
+                        sshPublisher(
+                            failOnError: true,
+                            continueOnError: false,
+                            publishers: [
+                                sshPublisherDesc(
+                                    configName: 'staging',
+                                    sshCredentials: [
+                                        username: "$USERNAME",
+                                        encryptedPassphrase: "$USERPASS"
+                                    ],
+                                    transfers: [
+                                        sshTransfer(
+                                            sourceFiles: 'dist/trainSchedule.zip',
+                                            removePrefix: 'dist/',
+                                            remoteDirectory: '/tmp',
+                                            execCommand: 'sudo /usr/bin/systemctl stop train-schedule && rm -rf /opt/train-schedule/* && unzip /tmp/trainSchedule.zip -d /opt/train-schedule && sudo /usr/bin/systemctl start train-schedule'
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    }
+                }
+            }
+            stage('DeployToProduction') {
+                when {
+                    branch 'master'
+                }
+                steps {
+                    input 'Does the staging environment look OK?'
+                    milestone(1)
+                    withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
+                        sshPublisher(
+                            failOnError: true,
+                            continueOnError: false,
+                            publishers: [
+                                sshPublisherDesc(
+                                    configName: 'production',
+                                    sshCredentials: [
+                                        username: "$USERNAME",
+                                        encryptedPassphrase: "$USERPASS"
+                                    ],
+                                    transfers: [
+                                        sshTransfer(
+                                            sourceFiles: 'dist/trainSchedule.zip',
+                                            removePrefix: 'dist/',
+                                            remoteDirectory: '/tmp',
+                                            execCommand: 'sudo /usr/bin/systemctl stop train-schedule && rm -rf /opt/train-schedule/* && unzip /tmp/trainSchedule.zip -d /opt/train-schedule && sudo /usr/bin/systemctl start train-schedule'
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    }
+                }
+            }
+            stage('Pull artifacts & deploy on tomcat') {
+                steps{
+                  withCredentials([usernamePassword(credentialsId: 'my-artifactory-cred',
+                                      usernameVariable: 'USERNAME',
+                                      passwordVariable: 'PASSWORD')]) {
+                    sh 'ssh ubuntu@149.158.89.34 curl -u ' + USERNAME + ':' + PASSWORD + ' -X GET "Your_JFrog_Artifactory_URL_of_file" --output /opt/tomcat9/webapps/deploy.war'
+                  }
+                }
+            }
+
         }
     }
 }
