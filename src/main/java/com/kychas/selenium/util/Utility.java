@@ -16,7 +16,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class Utility {
 	protected static String remote_url_firefox1 = "http://localhost:4446/wd/hub";
-	protected static String remote_url_firefox = "http://172.17.0.3:4446/wd/hub";
+	protected static String remote_url_firefox = "http://192.168.226.127:4446/wd/hub";
 	protected static String remote_url_chrome = "http://localhost:4444/wd/hub";
 
 	protected static Properties prop;
