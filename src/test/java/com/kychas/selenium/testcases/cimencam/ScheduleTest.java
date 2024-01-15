@@ -52,10 +52,10 @@ public class ScheduleTest extends BaseTest {
             try {
                 wait.until(ExpectedConditions.presenceOfElementLocated(elementLocator));
             } catch (TimeoutException e) {
-                fail("Login failed");
+                fail("Login failed, please review your credential");
             }
 
-            /***** Order List Proces ****/
+            /***** Plannification List Proces ****/
             TimeUtils.waitForSeconds(1);
             By orderMenuLocator = By.xpath("/html/body/mcw-root/nb-layout/div[1]/div/nb-layout-header/nav/mcw-menu-bar/div/button[2]");
             try {
@@ -65,7 +65,7 @@ public class ScheduleTest extends BaseTest {
                     orderMenu.click();
                 }
             } catch (TimeoutException e) {
-                fail("You are not log in, please login");
+                fail("You are log in, but we don't know why but we don't have access to schedule menu in header");
             }
             TimeUtils.waitForSeconds(1);
 
@@ -77,7 +77,7 @@ public class ScheduleTest extends BaseTest {
                     orderListFirstOption1.click();
                 }
             } catch (TimeoutException e) {
-                fail("You are not log in, please login");
+                fail("You are log in, but we don't know why but we have access to schedule menu in header but we don't have access to livraison option");
             }
 
 
@@ -99,7 +99,7 @@ public class ScheduleTest extends BaseTest {
                 btnOrderLists.get(0).click();
             }
         } catch (Exception e) {
-            fail("We cannot view schedule");
+            fail("" + e.getMessage());
         }
     }
 
@@ -181,7 +181,7 @@ public class ScheduleTest extends BaseTest {
                 btnOrderLists.get(0).click();
             }
         } catch (Exception e) {
-            fail("We cannot view schedule");
+            fail("" + e.getMessage());
         }
     }
 }
