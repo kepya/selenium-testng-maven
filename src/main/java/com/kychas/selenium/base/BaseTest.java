@@ -16,7 +16,7 @@ public class BaseTest {
     @BeforeMethod
     public void beforeTest() {
         try {
-            WebDriverFactory.initializedBrowser(true);
+            WebDriverFactory.initializedBrowser(false);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
