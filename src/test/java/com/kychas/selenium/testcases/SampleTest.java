@@ -10,6 +10,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import static com.kychas.selenium.util.Utility.isLocal;
 import static org.testng.Assert.fail;
 
 public class SampleTest extends BaseTest {
@@ -20,45 +21,92 @@ public class SampleTest extends BaseTest {
 
 	@Test
 	public void openSite() {
-		WebDriverFactory.getDriver().get("https://mcm-test.londo-tech.com/");
+        if (isLocal){
+            WebDriverFactory.getDriver().get("http://localhost:4200");
+        } else {
+            WebDriverFactory.getDriver().get("http://34.31.34.41:8082");
+        }
 	}
 
 	@Test
 	public void adminLoginSuccessfully() {
 		try {
-			//open browser to link https://mcm-test.londo-tech.com/
-			WebDriverFactory.getDriver().get("https://mcm-test.londo-tech.com/");
+            if (isLocal){
+                WebDriverFactory.getDriver().get("http://localhost:4200");
+            } else {
+                WebDriverFactory.getDriver().get("http://34.31.34.41:8082");
+            }
 
-			//get login btn element by classname
-			WebElement button = WebDriverFactory.getDriver().findElement(By.className("login-btn"));
+			WebElement button = WebDriverFactory.getDriver().findElement(By.xpath("/html/body/app-root/app-home/div[1]/div/section/button[1]"));
 			button.click();
 
-			//get email input element by xpath
-			WebElement emailInput = WebDriverFactory.getDriver().findElement(By.xpath("/html/body/mcw-root/nb-layout/div/div/div/div/div/nb-layout-column/mcw-home/div/section[1]/div/div[1]/div/div[1]/div/input"));
-			emailInput.sendKeys("admin@mycimencam.com");
+            WebDriverWait wait = new WebDriverWait(WebDriverFactory.getDriver(), 10);
+            By nomLocator = By.xpath("/html/body/app-root/app-register/div/div/form/input[1]");
 
-			//get password input element by xpat
-			WebElement passwordInput = WebDriverFactory.getDriver().findElement(By.xpath("/html/body/mcw-root/nb-layout/div/div/div/div/div/nb-layout-column/mcw-home/div/section[1]/div/div[1]/div/div[2]/div/input"));
-			passwordInput.sendKeys("TlpH9t");
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(nomLocator));
+                WebElement nomInput = WebDriverFactory.getDriver().findElement(nomLocator);
+                nomInput.sendKeys("Kychas");
+                System.out.println("Element exists");
+            } catch (TimeoutException e) {
+                fail("Element does not exist");
+            }
 
-			//get login btn element by classname
-			WebElement LoginBtn = WebDriverFactory.getDriver().findElement(By.xpath("/html/body/mcw-root/nb-layout/div/div/div/div/div/nb-layout-column/mcw-home/div/section[1]/div/div[1]/footer/button[1]"));
-			LoginBtn.click();
+            By prenomLocator = By.xpath("/html/body/app-root/app-register/div/div/form/input[2]");
 
-			WebDriverWait wait = new WebDriverWait(WebDriverFactory.getDriver(), 10);
-			By elementLocator = By.className("menubar-container");
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(prenomLocator));
+                WebElement prenomInput = WebDriverFactory.getDriver().findElement(prenomLocator);
+                prenomInput.sendKeys("Kychas");
+                System.out.println("Element exists");
+            } catch (TimeoutException e) {
+                fail("Element does not exist");
+            }
 
-			boolean isLogin = false;
-			try {
-				wait.until(ExpectedConditions.presenceOfElementLocated(elementLocator));
-				System.out.println("Element exists");
-				isLogin = true;
-			} catch (TimeoutException e) {
-				System.out.println("Element does not exist");
-				isLogin = false;
-			}
+            By usernameLocator = By.xpath("/html/body/app-root/app-register/div/div/form/input[3]");
 
-			Assert.assertTrue(isLogin);
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(usernameLocator));
+                WebElement usernameInput = WebDriverFactory.getDriver().findElement(usernameLocator);
+                usernameInput.sendKeys("Kychas");
+                System.out.println("Element exists");
+            } catch (TimeoutException e) {
+                fail("Element does not exist");
+            }
+
+            By phoneLocator = By.xpath("/html/body/app-root/app-register/div/div/form/input[4]");
+
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(phoneLocator));
+                WebElement phoneInput = WebDriverFactory.getDriver().findElement(phoneLocator);
+                phoneInput.sendKeys("680670670");
+                System.out.println("Element exists");
+            } catch (TimeoutException e) {
+                fail("Element does not exist");
+            }
+
+            By emailLocator = By.xpath("/html/body/app-root/app-register/div/div/form/input[5]");
+
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(emailLocator));
+                WebElement emailInput = WebDriverFactory.getDriver().findElement(emailLocator);
+                emailInput.sendKeys("admin@mycimencam.com");
+                System.out.println("Element exists");
+            } catch (TimeoutException e) {
+                fail("Element does not exist");
+            }
+
+            By passwordLocator = By.xpath("/html/body/app-root/app-register/div/div/form/input[6]");
+
+            try {
+                wait.until(ExpectedConditions.presenceOfElementLocated(passwordLocator));
+                WebElement passwordInput = WebDriverFactory.getDriver().findElement(passwordLocator);
+                passwordInput.sendKeys("Azerty@12");
+                System.out.println("Element exists");
+            } catch (TimeoutException e) {
+                fail("Element does not exist");
+            }
+
 		} catch (Exception e) {
 			fail(e.getMessage());
 		}

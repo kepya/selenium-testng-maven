@@ -20,6 +20,7 @@ public class Utility {
 	protected static String remote_url_chrome = "http://localhost:4444/wd/hub";
 
 	protected static Properties prop;
+	public static boolean isLocal = false;
 	protected static WebDriver driver;
 
 	public void propertyInit() {

@@ -49,9 +49,10 @@ public class WebDriverFactory extends Utility {
     /**
      * Main method of class - it initialize driver and starts browser.
      *
-     * @param isLocal - is tests will be started local or not
+     * @param isLocalV - is tests will be started local or not
      */
-    public static void initializedBrowser(boolean isLocal) throws MalformedURLException {
+    public static void initializedBrowser(boolean isLocalV) throws MalformedURLException {
+        isLocal = isLocalV;
         if (driver == null) {
             TestsBrowser testsBrowser = new TestsBrowser(prop.getProperty("Browser"));
             Browser browser = testsBrowser.getBrowser();
